@@ -1,13 +1,10 @@
 node_modules
-package-lock.json
 *.iml
-*.lock
 *.log
 *~
 \#*\#
 
 .*
-!.eslintrc
 !.gitignore
 !.gitattributes
-!.travis.yml
+!.github
