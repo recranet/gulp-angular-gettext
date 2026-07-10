@@ -1,17 +1,19 @@
 'use strict';
 
-var compile = require('../').compile;
-var extract = require('../').extract;
-var Vinyl = require('vinyl');
-var expect = require('chai').expect;
-var fs = require('fs');
-var path = require('path');
-var PO = require('pofile');
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
+const fs = require('node:fs');
+const path = require('node:path');
+const Vinyl = require('vinyl');
+const PO = require('pofile');
 
-var fixturesDir = path.join(__dirname, 'fixtures');
-var anotherDir = path.join(__dirname, 'another');
+const compile = require('../').compile;
+const extract = require('../').extract;
 
-var createFixtureFile = function (filename, content) {
+const fixturesDir = path.join(__dirname, 'fixtures');
+const anotherDir = path.join(__dirname, 'another');
+
+const createFixtureFile = function (filename, content) {
   return new Vinyl({
     cwd: __dirname,
     base: fixturesDir,
@@ -23,30 +25,30 @@ var createFixtureFile = function (filename, content) {
 describe('gulp-angular-gettext', function () {
   describe('extract()', function () {
 
-    it('should work with no arguments', function (done) {
-      var partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
+    it('should work with no arguments', function (t, done) {
+      const partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
 
-      var stream = extract();
+      const stream = extract();
       stream.on('error', done);
       stream.on('data', function (file) {
-        expect(file.path).to.equal(path.join(fixturesDir, 'partial.pot'));
+        assert.strictEqual(file.path, path.join(fixturesDir, 'partial.pot'));
 
         PO.load(path.join(fixturesDir, 'test.pot'), function (err, expected) {
           if (err) {
             done(err);
             return;
           }
-          var actual = PO.parse(file.contents.toString());
+          const actual = PO.parse(file.contents.toString());
 
-          // clear file references that depend on abolute paths
-          var actualItems = actual.items.map(function (i) {
+          // clear file references that depend on absolute paths
+          actual.items.forEach(function (i) {
             i.references = [];
           });
-          var expectedItems = expected.items.map(function (i) {
+          expected.items.forEach(function (i) {
             i.references = [];
           });
 
-          expect(actualItems).to.deep.equal(expectedItems);
+          assert.deepStrictEqual(actual.items, expected.items);
 
           done();
         });
@@ -56,30 +58,30 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should work with just a string argument', function (done) {
-      var partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
+    it('should work with just a string argument', function (t, done) {
+      const partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
 
-      var stream = extract('foo.bar');
+      const stream = extract('foo.bar');
       stream.on('error', done);
       stream.on('data', function (file) {
-        expect(file.path).to.equal(path.join(fixturesDir, 'foo.bar'));
+        assert.strictEqual(file.path, path.join(fixturesDir, 'foo.bar'));
 
         PO.load(path.join(fixturesDir, 'test.pot'), function (err, expected) {
           if (err) {
             done(err);
             return;
           }
-          var actual = PO.parse(file.contents.toString());
+          const actual = PO.parse(file.contents.toString());
 
-          // clear file references that depend on abolute paths
-          var actualItems = actual.items.map(function (i) {
+          // clear file references that depend on absolute paths
+          actual.items.forEach(function (i) {
             i.references = [];
           });
-          var expectedItems = expected.items.map(function (i) {
+          expected.items.forEach(function (i) {
             i.references = [];
           });
 
-          expect(actualItems).to.deep.equal(expectedItems);
+          assert.deepStrictEqual(actual.items, expected.items);
 
           done();
         });
@@ -89,21 +91,21 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should work with just an object argument', function (done) {
-      var partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
+    it('should work with just an object argument', function (t, done) {
+      const partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
 
-      var stream = extract();
+      const stream = extract();
       stream.on('error', done);
       stream.on('data', function (file) {
-        expect(file.path).to.equal(path.join(fixturesDir, 'partial.pot'));
+        assert.strictEqual(file.path, path.join(fixturesDir, 'partial.pot'));
 
         PO.load(path.join(fixturesDir, 'test.pot'), function (err, expected) {
           if (err) {
             done(err);
             return;
           }
-          var actual = PO.parse(file.contents.toString());
-          expect(actual).to.deep.equal(expected);
+          const actual = PO.parse(file.contents.toString());
+          assert.deepStrictEqual(actual, expected);
 
           done();
         });
@@ -113,9 +115,9 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should output multiple POTs if no ouput file', function (done) {
-      var partial1 = createFixtureFile('partial1.html', '<div translate>Hello</div>');
-      var partial2 = createFixtureFile('partial2.html', '<div translate>world</div>');
+    it('should output multiple POTs if no output file', function (t, done) {
+      const partial1 = createFixtureFile('partial1.html', '<div translate>Hello</div>');
+      const partial2 = createFixtureFile('partial2.html', '<div translate>world</div>');
 
       PO.load(path.join(fixturesDir, 'partial1.pot'), function (err, expected1) {
         if (err) {
@@ -129,23 +131,22 @@ describe('gulp-angular-gettext', function () {
             return;
           }
 
-          var stream = extract();
+          const stream = extract();
           stream.on('error', done);
 
-          var callCount = 0;
+          let callCount = 0;
           stream.on('data', function (file) {
             callCount++;
-            expect(callCount).to.be.gte(1)
-              .and.to.be.lte(2);
+            assert.ok(callCount >= 1 && callCount <= 2);
 
             if (callCount === 1) {
-              expect(file.path).to.equal(path.join(fixturesDir, 'partial1.pot'));
-              expect(PO.parse(file.contents.toString())).to.deep.equal(expected1);
+              assert.strictEqual(file.path, path.join(fixturesDir, 'partial1.pot'));
+              assert.deepStrictEqual(PO.parse(file.contents.toString()), expected1);
               return;
             }
 
-            expect(file.path).to.equal(path.join(fixturesDir, 'partial2.pot'));
-            expect(PO.parse(file.contents.toString())).to.deep.equal(expected2);
+            assert.strictEqual(file.path, path.join(fixturesDir, 'partial2.pot'));
+            assert.deepStrictEqual(PO.parse(file.contents.toString()), expected2);
 
             done();
           });
@@ -157,13 +158,13 @@ describe('gulp-angular-gettext', function () {
       });
     });
 
-    it('should work with a single input file', function (done) {
-      var partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
+    it('should work with a single input file', function (t, done) {
+      const partial = createFixtureFile('partial.html', '<div translate>Hello</div><div translate>Goodbye</div>');
 
-      var stream = extract();
+      const stream = extract();
       stream.on('error', done);
       stream.on('data', function (file) {
-        expect(file.isNull()).to.be.false;
+        assert.strictEqual(file.isNull(), false);
 
         fs.readFile(path.join(fixturesDir, 'test.pot'), {encoding: 'utf8'}, function (err, pot) {
           if (err) {
@@ -171,7 +172,7 @@ describe('gulp-angular-gettext', function () {
             return;
           }
 
-          expect(file.contents.toString()).to.equal(pot);
+          assert.strictEqual(file.contents.toString(), pot);
 
           done();
         });
@@ -180,14 +181,14 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should work with multiple input files', function (done) {
-      var partial1 = createFixtureFile('partial1.html', '<div translate>Hello</div>');
-      var partial2 = createFixtureFile('partial2.html', '<div translate>world</div>');
+    it('should work with multiple input files', function (t, done) {
+      const partial1 = createFixtureFile('partial1.html', '<div translate>Hello</div>');
+      const partial2 = createFixtureFile('partial2.html', '<div translate>world</div>');
 
-      var stream = extract('out.pot');
+      const stream = extract('out.pot');
       stream.on('error', done);
       stream.on('data', function (file) {
-        expect(file.isNull()).to.be.false;
+        assert.strictEqual(file.isNull(), false);
 
         fs.readFile(path.join(fixturesDir, 'multiple.pot'), {encoding: 'utf8'}, function (err, pot) {
           if (err) {
@@ -195,7 +196,7 @@ describe('gulp-angular-gettext', function () {
             return;
           }
 
-          expect(file.contents.toString()).to.equal(pot);
+          assert.strictEqual(file.contents.toString(), pot);
 
           done();
         });
@@ -205,38 +206,38 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should work with no input files', function (done) {
-      var files = [];
-      var stream = extract('out.pot');
+    it('should work with no input files', function (t, done) {
+      const files = [];
+      const stream = extract('out.pot');
       stream.on('error', done);
       stream.on('data', function (file) {
         files.push(file);
       });
       stream.on('end', function () {
-        expect(files.length).to.equal(0);
+        assert.strictEqual(files.length, 0);
         done();
       });
       stream.end();
     });
 
-    it('should support relative paths properly', function (done) {
-      var partial1 = new Vinyl({
+    it('should support relative paths properly', function (t, done) {
+      const partial1 = new Vinyl({
         cwd: __dirname,
         base: anotherDir,
         path: path.join(fixturesDir, 'partial1.html'),
         contents: Buffer.from('<div translate>Hello</div>')
       });
-      var partial2 = new Vinyl({
+      const partial2 = new Vinyl({
         cwd: __dirname,
         base: anotherDir,
         path: path.join(fixturesDir, 'partial2.html'),
         contents: Buffer.from('<div translate>world</div>')
       });
 
-      var stream = extract('out.pot');
+      const stream = extract('out.pot');
       stream.on('error', done);
       stream.on('data', function (file) {
-        expect(file.isNull()).to.be.false;
+        assert.strictEqual(file.isNull(), false);
 
         fs.readFile(path.join(fixturesDir, 'relative.pot'), {encoding: 'utf8'}, function (err, pot) {
           if (err) {
@@ -244,7 +245,7 @@ describe('gulp-angular-gettext', function () {
             return;
           }
 
-          expect(file.contents.toString()).to.equal(pot);
+          assert.strictEqual(file.contents.toString(), pot);
 
           done();
         });
@@ -254,11 +255,11 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should merge duplicate strings with references', function (done) {
-      var partial1 = createFixtureFile('partial1.html', '<div translate>Hello</div><div translate>Hello</div>');
-      var partial2 = createFixtureFile('partial2.html', '<div translate>Hello</div><div translate>world</div>');
+    it('should merge duplicate strings with references', function (t, done) {
+      const partial1 = createFixtureFile('partial1.html', '<div translate>Hello</div><div translate>Hello</div>');
+      const partial2 = createFixtureFile('partial2.html', '<div translate>Hello</div><div translate>world</div>');
 
-      var stream = extract('out.pot');
+      const stream = extract('out.pot');
       stream.on('error', done);
       stream.on('data', function (file) {
         fs.readFile(path.join(fixturesDir, 'merge-duplicates.pot'), {encoding: 'utf8'}, function (err, pot) {
@@ -267,7 +268,7 @@ describe('gulp-angular-gettext', function () {
             return;
           }
 
-          expect(file.contents.toString()).to.equal(pot);
+          assert.strictEqual(file.contents.toString(), pot);
 
           done();
         });
@@ -277,10 +278,10 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should extract plural strings', function (done) {
-      var partial1 = createFixtureFile('partial1.html', '<div translate translate-n="count" translate-plural="Birds">Bird</div>');
+    it('should extract plural strings', function (t, done) {
+      const partial1 = createFixtureFile('partial1.html', '<div translate translate-n="count" translate-plural="Birds">Bird</div>');
 
-      var stream = extract('out.pot');
+      const stream = extract('out.pot');
       stream.on('error', done);
       stream.on('data', function (file) {
         fs.readFile(path.join(fixturesDir, 'plural.pot'), {encoding: 'utf8'}, function (err, pot) {
@@ -289,7 +290,7 @@ describe('gulp-angular-gettext', function () {
             return;
           }
 
-          expect(file.contents.toString()).to.equal(pot);
+          assert.strictEqual(file.contents.toString(), pot);
 
           done();
         });
@@ -298,11 +299,11 @@ describe('gulp-angular-gettext', function () {
       stream.end();
     });
 
-    it('should merge singular and plural strings', function (done) {
-      var partial1 = createFixtureFile('partial1.html',
+    it('should merge singular and plural strings', function (t, done) {
+      const partial1 = createFixtureFile('partial1.html',
         '<div translate translate-n="count" translate-plural="Birds">Bird</div><div translate>Bird</div>');
 
-      var stream = extract('out.pot');
+      const stream = extract('out.pot');
       stream.on('error', done);
       stream.on('data', function (file) {
         fs.readFile(path.join(fixturesDir, 'plural.pot'), {encoding: 'utf8'}, function (err, pot) {
@@ -311,7 +312,7 @@ describe('gulp-angular-gettext', function () {
             return;
           }
 
-          expect(file.contents.toString()).to.equal(pot);
+          assert.strictEqual(file.contents.toString(), pot);
 
           done();
         });
@@ -322,20 +323,20 @@ describe('gulp-angular-gettext', function () {
   });
 
   describe('compile()', function () {
-    it('should match es.po', function (done) {
+    it('should match es.po', function (t, done) {
       fs.readFile(path.join(fixturesDir, 'es.po'), function (err, esPo) {
         if (err) {
           done(err);
           return;
         }
-        var stream = compile({
+        const stream = compile({
           format: 'json'
         });
         stream.on('error', done);
         stream.on('data', function (file) {
-          expect(file.isNull()).to.be.false;
-          expect(path.extname(file.path)).to.equal('.json');
-          expect(file.contents.toString()).to.equal(JSON.stringify({
+          assert.strictEqual(file.isNull(), false);
+          assert.strictEqual(path.extname(file.path), '.json');
+          assert.strictEqual(file.contents.toString(), JSON.stringify({
             es: {
               'Hello world': '¡Hola, mundo',
               Goodbye: 'Adios'
@@ -350,16 +351,16 @@ describe('gulp-angular-gettext', function () {
     });
 
     // I prefer JSON, but JS is angular-gettext-tool's default
-    it('should default to javascript', function (done) {
+    it('should default to javascript', function (t, done) {
       fs.readFile(path.join(fixturesDir, 'es.po'), function (err, esPo) {
         if (err) {
           done(err);
           return;
         }
-        var stream = compile();
+        const stream = compile();
         stream.on('error', done);
         stream.on('data', function (file) {
-          expect(path.extname(file.path)).to.equal('.js');
+          assert.strictEqual(path.extname(file.path), '.js');
 
           done();
         });

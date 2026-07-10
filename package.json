@@ -1,18 +1,17 @@
 {
-  "name": "gulp-angular-gettext",
-  "version": "2.3.0",
-  "description": "Gulp plugin for extracting/compiling angular-gettext strings",
+  "name": "@recranet/gulp-angular-gettext",
+  "version": "3.0.0",
+  "description": "Gulp plugin for extracting/compiling angular-gettext strings. Modernized fork of gulp-angular-gettext.",
   "license": "MIT",
-  "repository": "gabegorelick/gulp-angular-gettext",
+  "repository": "recranet/gulp-angular-gettext",
   "author": {
     "name": "Gabe Gorelick"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=22"
   },
   "scripts": {
-    "lint": "eslint *.js lib/**/*.js test/**/*.js",
-    "test": "npm run lint && mocha"
+    "test": "node --test \"test/*.test.js\""
   },
   "files": [
     "index.js",
@@ -26,15 +25,10 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "angular-gettext-tools": "^2.2.0",
-    "plugin-error": "^1.0.1",
-    "through2": "^2.0.1",
-    "vinyl": "^2.2.0"
+    "@recranet/angular-gettext-tools": "github:recranet/angular-gettext-tools#v3.0.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "eslint": "^6.5.0",
-    "mocha": "^6.2.1",
-    "pofile": "^1.1.0"
+    "pofile": "^1.1.4",
+    "vinyl": "^3.0.1"
   }
 }

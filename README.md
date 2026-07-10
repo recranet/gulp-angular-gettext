@@ -1,20 +1,26 @@
-# [gulp](http://gulpjs.com)-angular-gettext
+# @recranet/gulp-angular-gettext
 
 > Extract and compile translatable strings using [angular-gettext](http://angular-gettext.rocketeer.be)
 
+Modernized fork of [`gulp-angular-gettext`](https://github.com/gabegorelick/gulp-angular-gettext), built on [`@recranet/angular-gettext-tools`](https://github.com/recranet/angular-gettext-tools). The public API is unchanged.
+
+## Requirements
+
+* Node.js 22 or newer.
+
+The only runtime dependency is `@recranet/angular-gettext-tools`; the gulp plumbing uses the built-in `node:stream` module.
+
 ## Install
 
-Install with [npm](https://npmjs.org/package/gulp-angular-gettext)
-
 ```sh
-npm install --save-dev gulp-angular-gettext
+npm install --save-dev github:recranet/gulp-angular-gettext
 ```
 
 ## Example
 
 ```js
 var gulp = require('gulp');
-var gettext = require('gulp-angular-gettext');
+var gettext = require('@recranet/gulp-angular-gettext');
 
 gulp.task('pot', function () {
     return gulp.src(['src/partials/**/*.html', 'src/scripts/**/*.js'])
