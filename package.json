@@ -1,6 +1,6 @@
 {
   "name": "@recranet/gulp-angular-gettext",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Gulp plugin for extracting/compiling angular-gettext strings. Modernized fork of gulp-angular-gettext.",
   "license": "MIT",
   "repository": "recranet/gulp-angular-gettext",
