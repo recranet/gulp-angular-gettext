@@ -6,7 +6,7 @@ Modernized fork of [`gulp-angular-gettext`](https://github.com/gabegorelick/gulp
 
 ## Requirements
 
-* Node.js 22 or newer.
+* Node.js 22.12 or newer.
 
 The gulp plumbing uses the packages recommended by the gulp plugin guidelines: `through2`, `plugin-error` and `vinyl`.
 
