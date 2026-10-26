@@ -8,7 +8,7 @@ Modernized fork of [`gulp-angular-gettext`](https://github.com/gabegorelick/gulp
 
 * Node.js 22 or newer.
 
-The only runtime dependency is `@recranet/angular-gettext-tools`; the gulp plumbing uses the built-in `node:stream` module.
+The gulp plumbing uses the packages recommended by the gulp plugin guidelines: `through2`, `plugin-error` and `vinyl`.
 
 ## Install
 
