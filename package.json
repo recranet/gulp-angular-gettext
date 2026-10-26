@@ -3,7 +3,10 @@
   "version": "4.0.0",
   "description": "Gulp plugin for extracting/compiling angular-gettext strings. Modernized fork of gulp-angular-gettext.",
   "license": "MIT",
-  "repository": "recranet/gulp-angular-gettext",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recranet/gulp-angular-gettext.git"
+  },
   "author": {
     "name": "Gabe Gorelick"
   },
